@@ -19,20 +19,27 @@ async function handleClick() {
 }
 
 async function getOpenedDevice() {
-  const devices = await navigator.hid.getDevices();
-  let device = devices.find(d => d.vendorId === vendorId && d.productId === productId);
+  let devices = await navigator.hid.getDevices();
+  console.log(devices);
+  //let device = devices;//.find(d => d.vendorId === vendorId && d.productId === productId);
 
-  if (!device) {
-    device = await navigator.hid.requestDevice({
-      filters: [{ vendorId, productId }],
+  if (!devices[0]) {
+    devices = await navigator.hid.requestDevice({
+      filters: [/*{ vendorId, productId }*/],
     });
   }
 
-  if (!device.opened) {
-    await device.open();
+  console.log(devices[0]);
+  if (!devices[0].opened) {
+    try {
+    await devices[0].open();
+    } catch(e) {
+      document.querySelector('button').textContent = devices[0].productName + e;
+      console.error(e);
+    }
   }
 
-  return device;
+  return devices[0];
 }
 
 async function setColor(device, index, [r, g, b], retries = 1) {
